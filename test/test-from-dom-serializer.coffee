@@ -13,7 +13,6 @@ html = (component, options) ->
 xml = (component, options) ->
   html(component, extend(options or {}, {xmlMode:true}))
 
-
 describe 'render html', ->
   it 'should render <br /> tags correctly', ->
     comp = br()
@@ -43,25 +42,25 @@ describe 'render html', ->
     comp = list a({href:"./haha.html"}, "hi"), a(href:"./blah.html", "blah")
     expect(html(comp)).to.equal '<a href="./haha.html">hi</a><a href="./blah.html">blah</a>'
 
-  iit 'should preserve multiple hyphens in data attributes', ->
+  it 'should preserve multiple hyphens in data attributes', ->
     comp = div("data-foo-bar-baz":"value")
     expect(html(comp)).to.equal '<div data-foo-bar-baz="value"></div>'
 
   it 'should not encode characters in script tag', ->
-    comp = script('alert("hello world")')
-    expect(html(comp)).to.equal comp
+    comp = script('alert("hello world");')
+    expect(html(comp)).to.equal '<script>alert("hello world");</script>'
 
   it 'should not encode json data', ->
     comp = script('var json = {"simple_value": "value", "value_with_tokens": "&quot;here & \'there\'&quot;"};')
-    expect(html(comp)).to.equal comp
+    expect(html(comp)).to.equal '<script>var json = {"simple_value": "value", "value_with_tokens": "&quot;here & \'there\'&quot;"};</script>'
 
   it 'should render SVG nodes with a closing slash in HTML mode', ->
     comp = svg(tag('circle', {x:"12", y:"12"}), '<path d="123M"/><polygon points="60,20 100,40 100,80 60,100 20,80 20,40"/>')
-    expect(html(comp)).to.equal comp
+    expect(html(comp)).to.equal '<svg><circle x="12" y="12"/><path d="123M"/><polygon points="60,20 100,40 100,80 60,100 20,80 20,40"/></svg>'
 
   it 'should render iframe nodes with a closing slash in HTML mode', ->
     comp = iframe(src:"test")
-    expect(html(comp)).to.equal comp
+    expect(html(comp)).to.equal '<iframe src="test"></iframe>'
 
 ndescribe 'render', ->
   # only test applicable to the default setup

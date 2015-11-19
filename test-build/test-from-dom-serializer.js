@@ -68,7 +68,7 @@ describe('render html', function() {
     }, "blah"));
     return expect(html(comp)).to.equal('<a href="./haha.html">hi</a><a href="./blah.html">blah</a>');
   });
-  iit('should preserve multiple hyphens in data attributes', function() {
+  it('should preserve multiple hyphens in data attributes', function() {
     var comp;
     comp = div({
       "data-foo-bar-baz": "value"
@@ -77,13 +77,13 @@ describe('render html', function() {
   });
   it('should not encode characters in script tag', function() {
     var comp;
-    comp = script('alert("hello world")');
-    return expect(html(comp)).to.equal(comp);
+    comp = script('alert("hello world");');
+    return expect(html(comp)).to.equal('<script>alert("hello world");</script>');
   });
   it('should not encode json data', function() {
     var comp;
     comp = script('var json = {"simple_value": "value", "value_with_tokens": "&quot;here & \'there\'&quot;"};');
-    return expect(html(comp)).to.equal(comp);
+    return expect(html(comp)).to.equal('<script>var json = {"simple_value": "value", "value_with_tokens": "&quot;here & \'there\'&quot;"};</script>');
   });
   it('should render SVG nodes with a closing slash in HTML mode', function() {
     var comp;
@@ -91,14 +91,14 @@ describe('render html', function() {
       x: "12",
       y: "12"
     }), '<path d="123M"/><polygon points="60,20 100,40 100,80 60,100 20,80 20,40"/>');
-    return expect(html(comp)).to.equal(comp);
+    return expect(html(comp)).to.equal('<svg><circle x="12" y="12"/><path d="123M"/><polygon points="60,20 100,40 100,80 60,100 20,80 20,40"/></svg>');
   });
   return it('should render iframe nodes with a closing slash in HTML mode', function() {
     var comp;
     comp = iframe({
       src: "test"
     });
-    return expect(html(comp)).to.equal(comp);
+    return expect(html(comp)).to.equal('<iframe src="test"></iframe>');
   });
 });
 

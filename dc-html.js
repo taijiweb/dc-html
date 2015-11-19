@@ -2,12 +2,12 @@
 /*
   ported from https://github.com/cheeriojs/dom-serializer/blob/master/index.js
  */
-var Cdata, Comment, Component, Html, List, Nothing, Tag, Text, TransformComponent, booleanAttributes, childrenHtml, dc, domValue, encodeXML, singleTag, unencodedElements, _ref, _ref1,
+var Cdata, Comment, Component, Html, List, Nothing, Tag, Text, TransformComponent, booleanAttributes, childrenHtml, dc, domValue, encodeXML, extend, singleTag, unencodedElements, _ref, _ref1,
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 encodeXML = require('entities').encodeXML;
 
-_ref = dc = require("domcom"), domValue = _ref.domValue, List = _ref.List, Tag = _ref.Tag, Text = _ref.Text, Comment = _ref.Comment, Html = _ref.Html, Nothing = _ref.Nothing, Cdata = _ref.Cdata, Component = _ref.Component, TransformComponent = _ref.TransformComponent;
+_ref = dc = require("domcom"), extend = _ref.extend, domValue = _ref.domValue, List = _ref.List, Tag = _ref.Tag, Text = _ref.Text, Comment = _ref.Comment, Html = _ref.Html, Nothing = _ref.Nothing, Cdata = _ref.Cdata, Component = _ref.Component, TransformComponent = _ref.TransformComponent;
 
 _ref1 = require('./attrs'), booleanAttributes = _ref1.booleanAttributes, unencodedElements = _ref1.unencodedElements, singleTag = _ref1.singleTag;
 
@@ -106,6 +106,9 @@ Tag.prototype.getHtml = function(options) {
     if (prop === 'id') {
       continue;
     }
+    prop = prop.replace(/[A-Z]/g, function(match) {
+      return '-' + match.toLowerCase();
+    });
     value = domValue(value);
     if (value === '' && booleanAttributes[prop]) {
       propHtml.push(prop);
@@ -117,6 +120,9 @@ Tag.prototype.getHtml = function(options) {
   _ref2 = this.styles;
   for (prop in _ref2) {
     value = _ref2[prop];
+    prop = prop.replace(/[A-Z]/g, function(match) {
+      return '-' + match.toLowerCase();
+    });
     styleHtml.push(prop + ":" + domValue(value));
   }
   styleHtml.length && propHtml.push("style={" + styleHtml.join('; ') + "}");
@@ -133,7 +139,9 @@ Tag.prototype.getHtml = function(options) {
   if (xmlMode && !this.children.length) {
     html += '/>';
   } else {
-    html += '>' + childrenHtml(this.children, encoding);
+    html += '>' + childrenHtml(this.children, extend({}, options, {
+      xmlMode: xmlMode
+    }));
     if (!singleTag[tagName] || xmlMode) {
       html += '</' + tagHtml + '>';
     }

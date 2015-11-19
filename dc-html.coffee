@@ -4,7 +4,7 @@
 
 {encodeXML} = require('entities')
 
-{domValue, List, Tag, Text, Comment, Html, Nothing, Cdata, Component, TransformComponent} = dc = require "domcom"
+{extend, domValue, List, Tag, Text, Comment, Html, Nothing, Cdata, Component, TransformComponent} = dc = require "domcom"
 
 {booleanAttributes, unencodedElements, singleTag} = require './attrs'
 
@@ -91,6 +91,8 @@ Tag::getHtml = (options) ->
 
     if prop=='id' then continue
 
+    prop = prop.replace(/[A-Z]/g, (match) -> '-'+match.toLowerCase())
+
     value = domValue(value)
     if value=='' and booleanAttributes[prop]
       propHtml.push prop
@@ -99,6 +101,7 @@ Tag::getHtml = (options) ->
 
   styleHtml = []
   for prop, value of @styles
+    prop = prop.replace(/[A-Z]/g, (match) -> '-'+match.toLowerCase())
     styleHtml.push prop+":"+domValue(value)
   styleHtml.length and propHtml.push "style={"+styleHtml.join('; ')+"}"
 
@@ -114,7 +117,7 @@ Tag::getHtml = (options) ->
   if xmlMode and !@children.length
     html += '/>'
   else
-    html += '>' + childrenHtml(@children, encoding)
+    html += '>' + childrenHtml(@children, extend({}, options, {xmlMode}))
     if !singleTag[tagName] or xmlMode
       html += '</' + tagHtml + '>'
 

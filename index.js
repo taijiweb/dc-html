@@ -1,1 +1,1 @@
-module.exports = require("dc-html");
+module.exports = require("./dc-html");

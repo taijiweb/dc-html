@@ -4,17 +4,17 @@
 
 {encodeXML} = require('entities')
 
-{domValue, List, Tag, Text, Comment, Html, Nothing, Cdata, TransformComponent} = dc = require "domcom"
+{domValue, List, Tag, Text, Comment, Html, Nothing, Cdata, Component, TransformComponent} = dc = require "domcom"
 
-{booleanAttributes, unencodedElements, singleTag} = require 'attrs'
+{booleanAttributes, unencodedElements, singleTag} = require './attrs'
 
-Component::html = (options) ->
+Component::html = (options={}) ->
   if @valid and @encoding==options.encoding and @_html? then return @_html
 
   @_html = @getHtml(options)
 
-TransformComponent::html = (options) ->
-  @encoding = encoding
+TransformComponent::getHtml = (options) ->
+  @encoding = options.encoding
 
   content =
     if @transformValid then @content
@@ -30,13 +30,13 @@ childrenHtml = (children, options) ->
 
   htmlList.join ""
 
-List::html = (options) ->
-  @encoding = encoding
+List::getHtml = (options) ->
+  @encoding = options.encoding
   childrenHtml(@children, options)
 
 Nothing:: html = (options) -> ""
 
-Text::html = (options) ->
+Text::getHtml = (options) ->
   @encoding = options.encoding
 
   text = domValue(@text)
@@ -50,11 +50,11 @@ Text::html = (options) ->
 
   text
 
-Cdata::html = (options) ->
+Cdata::getHtml = (options) ->
   @encoding = options.encoding
   "<![CDATA[#{domValue(@text)}]]>"
 
-Html::html = (options) ->
+Html::getHtml = (options) ->
   @encoding = options.encoding
 
   text = domValue(@text)
@@ -62,11 +62,11 @@ Html::html = (options) ->
   if options.encoding then text = encodeXml(text)
   text
 
-Commment::html = (options) ->
+Comment::getHtml = (options) ->
   @encoding = options.encoding
   "<!-- #{domValue(@text)} -->"
 
-Tag::html = (options) ->
+Tag::getHtml = (options) ->
   {encoding, xmlMode} = options
   @encoding = encoding
 
@@ -85,26 +85,25 @@ Tag::html = (options) ->
   id and propHtml.push 'id="' + id
 
   className = @className()
-  className and propHtml.push 'className="' + className
+  className and propHtml.push 'class="' + className + '"'
 
-  for prop, value in props
+  for prop, value of props
 
-    if id then continue
+    if prop=='id' then continue
 
-    prop+"="+domValue(value)
     value = domValue(value)
-    if value=='' and booleanAttributes[prop] then propHtml.push prop
+    if value=='' and booleanAttributes[prop]
+      propHtml.push prop
     else
       propHtml.push prop + '="' + (if encoding then encodeXML(value) else value) + '"'
 
   styleHtml = []
-  for prop, value in @styles
+  for prop, value of @styles
     styleHtml.push prop+":"+domValue(value)
   styleHtml.length and propHtml.push "style={"+styleHtml.join('; ')+"}"
 
   # in dc-html, the value for events should be string, like "console.log('clicked!')"
-  for prop, value in @events
-    prop+"="+domValue(value)
+  for prop, value of @events
     value = domValue(value)
     if value
       propHtml.push prop + '="' + (if encoding then encodeXML(value) else value) + '"'

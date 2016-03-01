@@ -6,7 +6,7 @@
 
 {extend, domValue, List, Tag, Text, Comment, Html, Nothing, Cdata, Component, TransformComponent} = dc = require "domcom"
 
-{booleanAttributes, unencodedElements, singleTag} = require './attrs'
+{booleanAttributes, unencodedElements, singleTag} = require('./attrs')
 
 Component::html = (options={}) ->
   if @valid and @encoding==options.encoding and @_html? then return @_html

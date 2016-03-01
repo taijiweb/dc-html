@@ -2,9 +2,9 @@
 /*
   ported from https://github.com/cheeriojs/dom-serializer/blob/master/index.js
  */
-var a, br, comment, dc, div, expect, extend, hr, html, idescribe, iframe, iit, input, list, ndescribe, nit, script, svg, tag, xml, _ref, _ref1;
+var a, br, comment, dc, ddescribe, div, expect, extend, hr, html, idescribe, iframe, iit, input, list, ndescribe, nit, script, svg, tag, xml, _ref, _ref1;
 
-_ref = require('bdd-test-helper'), expect = _ref.expect, iit = _ref.iit, idescribe = _ref.idescribe, nit = _ref.nit, ndescribe = _ref.ndescribe;
+_ref = require('bdd-test-helper'), expect = _ref.expect, iit = _ref.iit, idescribe = _ref.idescribe, nit = _ref.nit, ndescribe = _ref.ndescribe, ddescribe = _ref.ddescribe;
 
 _ref1 = dc = require("../index"), extend = _ref1.extend, tag = _ref1.tag, br = _ref1.br, hr = _ref1.hr, input = _ref1.input, a = _ref1.a, list = _ref1.list, svg = _ref1.svg, input = _ref1.input, div = _ref1.div, script = _ref1.script, iframe = _ref1.iframe, comment = _ref1.comment;
 

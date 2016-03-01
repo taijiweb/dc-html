@@ -3,7 +3,7 @@
 ###
 
 
-{expect, iit, idescribe, nit, ndescribe} = require('bdd-test-helper')
+{expect, iit, idescribe, nit, ndescribe, ddescribe} = require('bdd-test-helper')
 
 {extend, tag, br, hr, input, a, list, svg, input, div, script, iframe, comment} = dc = require "../index"
 

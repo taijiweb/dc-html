@@ -9,7 +9,7 @@
 {booleanAttributes, unencodedElements, singleTag} = require('./attrs')
 
 Component::html = (options={}) ->
-  if @valid and @encoding==options.encoding and @_html? then return @_html
+  if @valid && @encoding==options.encoding && @_html? then return @_html
 
   @_html = @getHtml(options)
 
@@ -39,32 +39,32 @@ Nothing:: html = (options) -> ""
 Text::getHtml = (options) ->
   @encoding = options.encoding
 
-  text = domValue(@text)
+  text = domValue(@text, this)
 
   parentTag = @reachTag()
   if !parentTag.tagName
-    parentTag.parentNode and parentTag = parentTag.parentNode
+    parentTag.parentNode && parentTag = parentTag.parentNode
 
-  if @encoding and parentTag.tagName in unencodedElements
+  if @encoding && parentTag.tagName in unencodedElements
     text = encodeXML(text)
 
   text
 
 Cdata::getHtml = (options) ->
   @encoding = options.encoding
-  "<![CDATA[#{domValue(@text)}]]>"
+  "<![CDATA[#{domValue(@text, this)}]]>"
 
 Html::getHtml = (options) ->
   @encoding = options.encoding
 
-  text = domValue(@text)
-  text = @transform and @transform(text) or text
+  text = domValue(@text, this)
+  text = @transform && @transform(text) || text
   if options.encoding then text = encodeXml(text)
   text
 
 Comment::getHtml = (options) ->
   @encoding = options.encoding
-  "<!-- #{domValue(@text)} -->"
+  "<!-- #{domValue(@text, this)} -->"
 
 Tag::getHtml = (options) ->
   {encoding, xmlMode} = options
@@ -81,11 +81,11 @@ Tag::getHtml = (options) ->
 
   propHtml = []
   # put id="..." at the begin
-  id = domValue(props.id)
-  id and propHtml.push 'id="' + id
+  id = domValue(props.id, this)
+  id && propHtml.push 'id="' + id
 
-  className = @className()
-  className and propHtml.push 'class="' + className + '"'
+  className = @className.call(this)
+  className && propHtml.push 'class="' + className + '"'
 
   for prop, value of props
 
@@ -93,8 +93,8 @@ Tag::getHtml = (options) ->
 
     prop = prop.replace(/[A-Z]/g, (match) -> '-'+match.toLowerCase())
 
-    value = domValue(value)
-    if value=='' and booleanAttributes[prop]
+    value = domValue(value, this)
+    if value=='' && booleanAttributes[prop]
       propHtml.push prop
     else
       propHtml.push prop + '="' + (if encoding then encodeXML(value) else value) + '"'
@@ -102,23 +102,23 @@ Tag::getHtml = (options) ->
   styleHtml = []
   for prop, value of @styles
     prop = prop.replace(/[A-Z]/g, (match) -> '-'+match.toLowerCase())
-    styleHtml.push prop+":"+domValue(value)
-  styleHtml.length and propHtml.push "style={"+styleHtml.join('; ')+"}"
+    styleHtml.push(prop+":"+domValue(value, this))
+  styleHtml.length && propHtml.push "style={"+styleHtml.join('; ')+"}"
 
   # in dc-html, the value for events should be string, like "console.log('clicked!')"
   for prop, value of @events
-    value = domValue(value)
+    value = domValue(value, this)
     if value
       propHtml.push prop + '="' + (if encoding then encodeXML(value) else value) + '"'
 
   propHtml = propHtml.join(" ")
-  propHtml and html += ' '+propHtml
+  propHtml && html += ' '+propHtml
 
-  if xmlMode and !@children.length
+  if xmlMode && !@children.length
     html += '/>'
   else
     html += '>' + childrenHtml(@children, extend({}, options, {xmlMode}))
-    if !singleTag[tagName] or xmlMode
+    if !singleTag[tagName] || xmlMode
       html += '</' + tagHtml + '>'
 
   html

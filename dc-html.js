@@ -50,7 +50,7 @@ Nothing.prototype.html = function(options) {
 Text.prototype.getHtml = function(options) {
   var parentTag, text, _ref2;
   this.encoding = options.encoding;
-  text = domValue(this.text);
+  text = domValue(this.text, this);
   parentTag = this.reachTag();
   if (!parentTag.tagName) {
     parentTag.parentNode && (parentTag = parentTag.parentNode);
@@ -63,13 +63,13 @@ Text.prototype.getHtml = function(options) {
 
 Cdata.prototype.getHtml = function(options) {
   this.encoding = options.encoding;
-  return "<![CDATA[" + (domValue(this.text)) + "]]>";
+  return "<![CDATA[" + (domValue(this.text, this)) + "]]>";
 };
 
 Html.prototype.getHtml = function(options) {
   var text;
   this.encoding = options.encoding;
-  text = domValue(this.text);
+  text = domValue(this.text, this);
   text = this.transform && this.transform(text) || text;
   if (options.encoding) {
     text = encodeXml(text);
@@ -79,7 +79,7 @@ Html.prototype.getHtml = function(options) {
 
 Comment.prototype.getHtml = function(options) {
   this.encoding = options.encoding;
-  return "<!-- " + (domValue(this.text)) + " -->";
+  return "<!-- " + (domValue(this.text, this)) + " -->";
 };
 
 Tag.prototype.getHtml = function(options) {
@@ -97,9 +97,9 @@ Tag.prototype.getHtml = function(options) {
   }
   html = '<' + tagHtml;
   propHtml = [];
-  id = domValue(props.id);
+  id = domValue(props.id, this);
   id && propHtml.push('id="' + id);
-  className = this.className();
+  className = this.className.call(this);
   className && propHtml.push('class="' + className + '"');
   for (prop in props) {
     value = props[prop];
@@ -109,7 +109,7 @@ Tag.prototype.getHtml = function(options) {
     prop = prop.replace(/[A-Z]/g, function(match) {
       return '-' + match.toLowerCase();
     });
-    value = domValue(value);
+    value = domValue(value, this);
     if (value === '' && booleanAttributes[prop]) {
       propHtml.push(prop);
     } else {
@@ -123,13 +123,13 @@ Tag.prototype.getHtml = function(options) {
     prop = prop.replace(/[A-Z]/g, function(match) {
       return '-' + match.toLowerCase();
     });
-    styleHtml.push(prop + ":" + domValue(value));
+    styleHtml.push(prop + ":" + domValue(value, this));
   }
   styleHtml.length && propHtml.push("style={" + styleHtml.join('; ') + "}");
   _ref3 = this.events;
   for (prop in _ref3) {
     value = _ref3[prop];
-    value = domValue(value);
+    value = domValue(value, this);
     if (value) {
       propHtml.push(prop + '="' + (encoding ? encodeXML(value) : value) + '"');
     }

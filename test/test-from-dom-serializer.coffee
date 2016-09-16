@@ -11,7 +11,7 @@ html = (component, options) ->
   component.html(options)
 
 xml = (component, options) ->
-  html(component, extend(options or {}, {xmlMode:true}))
+  html(component, extend(options || {}, {xmlMode:true}))
 
 describe 'render html', ->
   it 'should render <br /> tags correctly', ->
